@@ -7,7 +7,12 @@ import { ConfigModule } from '@nestjs/config';
 import emailConfig from './config/emailConfig';
 import { validationSchema } from './config/validateSchema';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserEntity } from './users/user.entity';
+
+import { AuthModule } from './auth/auth.module';
+import { ExceptionModule } from './exception/exception.module';
+import authConfig from './config/authConfig';
+import { APP_FILTER } from '@nestjs/core';
+import { HttpExceptionFilter } from './exception/exception.filter';
 
 @Module({
   imports: [
@@ -15,7 +20,7 @@ import { UserEntity } from './users/user.entity';
     EmailModule,
     ConfigModule.forRoot({
       envFilePath: [`${__dirname}/config/env/.${process.env.NODE_ENV}.env`],
-      load: [emailConfig],
+      load: [emailConfig, authConfig],
       isGlobal: true,
       validationSchema,
     }),
@@ -31,6 +36,8 @@ import { UserEntity } from './users/user.entity';
       migrations: [__dirname + '/**/migrations/*.js'],
       migrationsTableName: 'migrations',
     }),
+    AuthModule,
+    ExceptionModule,
   ],
   controllers: [AppController],
   providers: [AppService],
